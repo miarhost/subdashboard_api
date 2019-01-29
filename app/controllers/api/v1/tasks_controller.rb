@@ -1,25 +1,24 @@
-class Api::V1::TasksController < BaseApiController
+class Api::V1::TasksController < ApplicationController
 
-  before_filter :find_task, only: [:show, :update]
+  before_action :find_task, only: [:show, :update]
 
-  before_filter only :create do |c| 
+  before_action only: :create do |c| 
     meth = c.method(:validate_json) 
     meth.call(@json.has_key?['task'] && @json['task']).responds_to?(:[]) && @json['task']['name']
   end 
 
-  before_fiter only :update do |u|
+  before_action only: :update do |u|
   	 meth = u.method(:validate_json)
   	 meth.call(@json.has_key?['task'])
   end
 
-  before_filter only :create do |c| 
+  before_action only: :create do |c| 
   	 meth = c.method(:check_for_existence)
   	 meth.call(@task, "Task", "find_by_name(@json['task']['name'])")
   end
 
   def index 
-  	 @tasks = Task.where(user_id: @user.id)
-  	 render json: @tasks
+    render json: Task.where('user_id = ?', current_user.id)
   end
   
   def show
@@ -33,8 +32,8 @@ class Api::V1::TasksController < BaseApiController
   	 if @task.present?
   	 	 render nothing: true, status: :conflict
   	 else
-  	 	 @project = Project.new 
-  	 	 update_values: @task, @json['task']
+  	 	 @task = Task.new 
+  	 	 update_values  @task, @json['task']
   	 	 render json: @task, status: :created, location: api_v1_task_url(@task)
   	 end
   end 
@@ -45,4 +44,6 @@ class Api::V1::TasksController < BaseApiController
   	 @task = Task.find_by_name(params[:name])
   	 render nothing: true, status: :not_found unless @task.present? && @task.user == @user
   end
+
+end
 

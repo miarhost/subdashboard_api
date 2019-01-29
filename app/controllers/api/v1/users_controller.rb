@@ -1,6 +1,6 @@
-class Api::V1::UsersController < BaseApiController
-
-  before_filter :find_user, only: [:show]
+class Api::V1::UsersController < ApplicationController
+  before_action :authenticate_user!
+  before_action :find_user, only: [:show]
 
   def index
     @users = User.all
@@ -26,6 +26,10 @@ class Api::V1::UsersController < BaseApiController
 
   def find_user
   	 @user = User.find_by_id(params[:id])
+  end
+  
+  def user_params
+  	 params.require(:user).permit(:name, :email, :salary, :onbase_id, :working_status)
   end
 
 end  
