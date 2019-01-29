@@ -1,5 +1,18 @@
 Rails.application.routes.draw do
-  devise_for :users
+
+  scope :api, defaults: { format: :json } do
+    devise_for :users
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :users do
+    	   resources :tasks
+      end
+       root to: 'users#index'
+    end
+  end
+ 
   scope '/api' do
     scope '/v1' do
       scope '/users' do

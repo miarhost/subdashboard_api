@@ -5,7 +5,7 @@ class BaseApiController < ApplicationController
   private
 
   def authenticate_user_from_token!
-    if @json['api_token']
+    if !@json['api_token']
       render nothing: true, status: :unautorized 
     else
       @user = nil

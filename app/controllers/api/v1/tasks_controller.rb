@@ -18,12 +18,15 @@ class Api::V1::TasksController < BaseApiController
   end
 
   def index 
-  	 @tasks = Task.all
+  	 @tasks = Task.where(user_id: @user.id)
   	 render json: @tasks
   end
   
   def show
-  	 render json: @task
+    @task = Task.show(params[:id])
+  	if stale?(last_modified: @task.updated_at, public: true)
+      render json: @task
+    end
   end
 
   def create 
