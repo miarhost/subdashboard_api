@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
 
   scope :api, defaults: { format: :json } do
+  	scope :v1 do
     devise_for :users, controllers: { sessions: :sessions },
                        pathname: { sign_in: :login }
+   end
   end
 
   namespace :api do
@@ -10,7 +12,7 @@ Rails.application.routes.draw do
       resources :users do
     	   resources :tasks
       end
-       root to: 'users#index'
+       root to: 'api/v1/users#index'
     end
   end
 
